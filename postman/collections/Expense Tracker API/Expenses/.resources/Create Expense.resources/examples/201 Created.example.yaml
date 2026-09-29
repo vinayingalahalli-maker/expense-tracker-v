@@ -1,0 +1,44 @@
+$kind: http-example
+name: 201 Created
+request:
+  url: "{{base_url}}/expenses"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "category_id": "cat-001",
+        "amount": 120.50,
+        "currency": "USD",
+        "date": "2024-06-10",
+        "merchant": "Delta Airlines",
+        "description": "Flight to NYC for client meeting",
+        "receipt_url": "https://storage.northbeam.com/receipts/exp-001.pdf"
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": "exp-001",
+        "employee_id": "usr-001",
+        "category_id": "cat-001",
+        "category_name": "Travel",
+        "amount": 120.50,
+        "currency": "USD",
+        "date": "2024-06-10",
+        "merchant": "Delta Airlines",
+        "description": "Flight to NYC for client meeting",
+        "receipt_url": "https://storage.northbeam.com/receipts/exp-001.pdf",
+        "status": "unclaimed",
+        "claim_id": null,
+        "created_at": "2024-06-10T18:00:00Z",
+        "updated_at": "2024-06-10T18:00:00Z"
+      }
+order: 1000

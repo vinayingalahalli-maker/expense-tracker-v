@@ -1,0 +1,10 @@
+$kind: collection
+name: Categories
+description: |-
+  Expense categories are maintained centrally by Finance.
+  Each category has a receipt threshold — expenses above this amount require a receipt.
+
+  **Role access:**
+  - `GET` endpoints — all authenticated roles
+  - `POST`, `PUT`, `DELETE` — Finance only
+order: 2000

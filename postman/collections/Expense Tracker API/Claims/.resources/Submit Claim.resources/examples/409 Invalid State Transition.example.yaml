@@ -1,0 +1,23 @@
+$kind: http-example
+name: 409 Invalid State Transition
+request:
+  url: "{{base_url}}/claims/clm-001/submit"
+  method: POST
+  pathVariables:
+    - key: claimId
+      value: "{{claim_id}}"
+      description: The unique ID of the draft claim to submit
+response:
+  statusCode: 409
+  statusText: Conflict
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "invalid_state_transition",
+        "message": "Claim clm-001 is already submitted and cannot be submitted again.",
+        "current_status": "submitted"
+      }
+order: 2000

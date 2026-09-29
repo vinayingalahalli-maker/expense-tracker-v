@@ -1,0 +1,16 @@
+$kind: collection
+name: Expenses
+description: |-
+  Employees record individual expenses against a category.
+  Each expense captures the amount, currency, date, merchant, and an optional receipt.
+
+  **Business rules:**
+  - `amount` must be positive
+  - `date` cannot be in the future
+  - A receipt is mandatory when `amount` exceeds the category's `receipt_threshold`
+  - Expenses inside a submitted claim are frozen and cannot be edited or deleted
+
+  **Role access:**
+  - `employee` — create, read, update, delete their own expenses
+  - `approver` / `finance` — read all expenses
+order: 3000

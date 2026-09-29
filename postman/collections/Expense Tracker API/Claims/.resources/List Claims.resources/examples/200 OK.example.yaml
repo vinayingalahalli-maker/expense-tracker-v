@@ -1,0 +1,54 @@
+$kind: http-example
+name: 200 OK
+request:
+  url: "{{base_url}}/claims"
+  method: GET
+  queryParams:
+    - key: status
+      value: submitted
+      disabled: true
+      description: "Filter by status: draft | submitted | approved | rejected | reimbursed"
+    - key: employee_id
+      value: usr-001
+      disabled: true
+      description: Filter by employee (Finance and Approver only)
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "claims": [
+          {
+            "id": "clm-001",
+            "employee_id": "usr-001",
+            "employee_name": "Alice Chen",
+            "title": "June 2024 NYC Trip",
+            "status": "submitted",
+            "total_amount": 139.25,
+            "currency": "USD",
+            "expense_count": 2,
+            "submitted_at": "2024-06-12T09:00:00Z",
+            "created_at": "2024-06-11T20:00:00Z",
+            "updated_at": "2024-06-12T09:00:00Z"
+          },
+          {
+            "id": "clm-002",
+            "employee_id": "usr-001",
+            "employee_name": "Alice Chen",
+            "title": "May 2024 Expenses",
+            "status": "reimbursed",
+            "total_amount": 245.00,
+            "currency": "USD",
+            "expense_count": 3,
+            "submitted_at": "2024-05-31T17:00:00Z",
+            "created_at": "2024-05-30T10:00:00Z",
+            "updated_at": "2024-06-05T11:00:00Z"
+          }
+        ],
+        "total": 2
+      }
+order: 1000

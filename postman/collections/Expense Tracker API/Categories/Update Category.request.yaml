@@ -1,0 +1,21 @@
+$kind: http-request
+name: Update Category
+order: 4000
+method: PUT
+url: "{{base_url}}/categories/:categoryId"
+pathVariables:
+  - key: categoryId
+    value: "{{category_id}}"
+    description: The unique ID of the category to update
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Travel & Transport",
+      "description": "Flights, trains, taxis, car hire and other transport",
+      "receipt_threshold": 75.00,
+      "currency": "USD"
+    }
+examples: ./.resources/Update Category.resources/examples

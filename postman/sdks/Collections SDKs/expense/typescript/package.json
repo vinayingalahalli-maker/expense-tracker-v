@@ -1,0 +1,43 @@
+{
+  "name": "expense-tracker-api-sdk",
+  "version": "1.0.0",
+  "description": "# Expense Tracker API  REST API for Northbeam Consulting's internal expense management system.  Employees record expenses, group them into claims, and submit for approval. Approvers review and approve or reject claims. Finance marks approved claims as reimbursed.  ## Authentication All endpoints require a **JWT Bearer token** (HS256). The token encodes the caller's role: - `employee` — submit expenses and claims - `approver` — approve or reject claims (cannot approve own claims) - `finance` — manage categories and mark claims as reimbursed  ## Claim State Machine `draft → submitted → approved | rejected → reimbursed`  ## Business Rules - Amounts must be positive; dates cannot be in the future - Expenses older than 90 days cannot be added to a claim - A receipt is mandatory when the expense amount exceeds the category threshold - Expenses inside a submitted claim are frozen (cannot be edited or deleted) - An approver cannot approve their own claim - A reimbursed claim is final",
+  "source": "./src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "browser": "./dist/index.js",
+  "unpkg": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "tsc --noEmit",
+    "build": "tsup-node src/index.ts --format cjs,esm --dts --clean",
+    "prepublishOnly": "chmod +x ./scripts/prepublish.sh && ./scripts/prepublish.sh && npm run build",
+    "test-example": "cd examples && tsc --noEmit"
+  },
+  "keywords": [
+    "typescript",
+    "sdk",
+    "api",
+    "client"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "author": "",
+  "devDependencies": {
+    "typescript": "5.3.3",
+    "@types/node": "^22.14.0",
+    "tsup": "^6.7.0"
+  },
+  "dependencies": {
+    "zod": "3.22.3"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}

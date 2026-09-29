@@ -1,0 +1,81 @@
+{
+  "endpoints": {
+    "/auth/login": {
+      "post": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\nfrom expense_tracker_api_sdk.models import LoginAsFinanceRequest\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nrequest_body = LoginAsFinanceRequest(\n    email=\"carol@northbeam.com\",\n    password=\"password123\"\n)\n\nresult = sdk.expense_tracker_api_sdk.login_as_finance(request_body=request_body)\n\nprint(result)\n"
+    },
+    "/categories": {
+      "get": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.list_categories()\n\nprint(result)\n",
+      "post": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\nfrom expense_tracker_api_sdk.models import CreateCategoryRequest\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nrequest_body = CreateCategoryRequest(\n    name=\"Software & Subscriptions\",\n    description=\"SaaS tools, licenses and software subscriptions\",\n    receipt_threshold=20,\n    currency=\"USD\"\n)\n\nresult = sdk.expense_tracker_api_sdk.create_category(request_body=request_body)\n\nprint(result)\n"
+    },
+    "/categories/{categoryId}": {
+      "get": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.get_category(category_id=\"categoryId\")\n\nprint(result)\n",
+      "put": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\nfrom expense_tracker_api_sdk.models import UpdateCategoryRequest\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nrequest_body = UpdateCategoryRequest(\n    name=\"Travel & Transport\",\n    description=\"Flights, trains, taxis, car hire and other transport\",\n    receipt_threshold=75,\n    currency=\"USD\"\n)\n\nresult = sdk.expense_tracker_api_sdk.update_category(\n    request_body=request_body,\n    category_id=\"categoryId\"\n)\n\nprint(result)\n",
+      "delete": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.delete_category(category_id=\"categoryId\")\n\nprint(result)\n"
+    },
+    "/expenses": {
+      "get": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.list_expenses(\n    status=\"unclaimed\",\n    category_id=\"cat-001\",\n    from_date=\"2024-01-01\",\n    to_date=\"2024-12-31\"\n)\n\nprint(result)\n",
+      "post": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\nfrom expense_tracker_api_sdk.models import CreateExpenseRequest\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nrequest_body = CreateExpenseRequest(\n    category_id=\"{{category_id}}\",\n    amount=120.5,\n    currency=\"USD\",\n    date_=\"2024-06-10\",\n    merchant=\"Delta Airlines\",\n    description=\"Flight to NYC for client meeting\",\n    receipt_url=\"https://storage.northbeam.com/receipts/exp-001.pdf\"\n)\n\nresult = sdk.expense_tracker_api_sdk.create_expense(request_body=request_body)\n\nprint(result)\n"
+    },
+    "/expenses/{expenseId}": {
+      "get": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.get_expense(expense_id=\"expenseId\")\n\nprint(result)\n",
+      "put": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\nfrom expense_tracker_api_sdk.models import UpdateExpenseRequest\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nrequest_body = UpdateExpenseRequest(\n    category_id=\"cat-001\",\n    amount=135,\n    currency=\"USD\",\n    date_=\"2024-06-10\",\n    merchant=\"Delta Airlines\",\n    description=\"Flight to NYC for client meeting (updated fare)\",\n    receipt_url=\"https://storage.northbeam.com/receipts/exp-001-v2.pdf\"\n)\n\nresult = sdk.expense_tracker_api_sdk.update_expense(\n    request_body=request_body,\n    expense_id=\"expenseId\"\n)\n\nprint(result)\n",
+      "delete": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.delete_expense(expense_id=\"expenseId\")\n\nprint(result)\n"
+    },
+    "/claims": {
+      "get": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.list_claims(\n    status=\"submitted\",\n    employee_id=\"usr-001\"\n)\n\nprint(result)\n",
+      "post": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\nfrom expense_tracker_api_sdk.models import CreateClaimRequest\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nrequest_body = CreateClaimRequest(\n    title=\"June 2024 NYC Trip\",\n    expense_ids=[\n        \"{{expense_id}}\"\n    ]\n)\n\nresult = sdk.expense_tracker_api_sdk.create_claim(request_body=request_body)\n\nprint(result)\n"
+    },
+    "/claims/{claimId}": {
+      "get": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.get_claim(claim_id=\"claimId\")\n\nprint(result)\n"
+    },
+    "/claims/{claimId}/submit": {
+      "post": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.submit_claim(claim_id=\"claimId\")\n\nprint(result)\n"
+    },
+    "/claims/{claimId}/approve": {
+      "post": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.approve_claim(claim_id=\"claimId\")\n\nprint(result)\n"
+    }
+  },
+  "methodResponses": {
+    "/auth/login": {
+      "post": "print(result)"
+    },
+    "/categories": {
+      "get": "print(result)",
+      "post": "print(result)"
+    },
+    "/categories/{categoryId}": {
+      "get": "print(result)",
+      "put": "print(result)",
+      "delete": "print(result)"
+    },
+    "/expenses": {
+      "get": "print(result)",
+      "post": "print(result)"
+    },
+    "/expenses/{expenseId}": {
+      "get": "print(result)",
+      "put": "print(result)",
+      "delete": "print(result)"
+    },
+    "/claims": {
+      "get": "print(result)",
+      "post": "print(result)"
+    },
+    "/claims/{claimId}": {
+      "get": "print(result)"
+    },
+    "/claims/{claimId}/submit": {
+      "post": "print(result)"
+    },
+    "/claims/{claimId}/approve": {
+      "post": "print(result)"
+    }
+  },
+  "example": "from expense_tracker_api_sdk import ExpenseTrackerApiSdk, Environment\n\nsdk = ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10\n)\n\nresult = sdk.expense_tracker_api_sdk.list_categories()\n\nprint(result)\n",
+  "authentication": {
+    "bearer": {
+      "constructor": "ExpenseTrackerApiSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    timeout=10\n)",
+      "setter": "sdk.set_access_token(\"YOUR_ACCESS_TOKEN\")"
+    }
+  }
+}

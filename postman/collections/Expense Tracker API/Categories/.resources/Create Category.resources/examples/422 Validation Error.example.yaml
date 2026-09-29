@@ -1,0 +1,37 @@
+$kind: http-example
+name: 422 Validation Error
+request:
+  url: "{{base_url}}/categories"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "name": "",
+        "receipt_threshold": -10
+      }
+response:
+  statusCode: 422
+  statusText: Unprocessable Entity
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "validation_error",
+        "message": "Request body contains invalid fields.",
+        "details": [
+          {
+            "field": "name",
+            "issue": "name is required and cannot be empty."
+          },
+          {
+            "field": "receipt_threshold",
+            "issue": "receipt_threshold must be a positive number."
+          }
+        ]
+      }
+order: 3000

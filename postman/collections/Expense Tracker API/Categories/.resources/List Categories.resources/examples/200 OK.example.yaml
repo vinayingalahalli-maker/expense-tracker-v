@@ -1,0 +1,55 @@
+$kind: http-example
+name: 200 OK
+request:
+  url: "{{base_url}}/categories"
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "categories": [
+          {
+            "id": "cat-001",
+            "name": "Travel",
+            "description": "Flights, trains, taxis and other transport",
+            "receipt_threshold": 50.00,
+            "currency": "USD",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+          },
+          {
+            "id": "cat-002",
+            "name": "Meals & Entertainment",
+            "description": "Business meals and client entertainment",
+            "receipt_threshold": 25.00,
+            "currency": "USD",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+          },
+          {
+            "id": "cat-003",
+            "name": "Accommodation",
+            "description": "Hotels and other lodging",
+            "receipt_threshold": 100.00,
+            "currency": "USD",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+          },
+          {
+            "id": "cat-004",
+            "name": "Office Supplies",
+            "description": "Stationery, equipment and other office items",
+            "receipt_threshold": 30.00,
+            "currency": "USD",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+          }
+        ],
+        "total": 4
+      }
+order: 1000

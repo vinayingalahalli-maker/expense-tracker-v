@@ -1,0 +1,3 @@
+$kind: collection
+name: "Integration Test: Claim Submission & Approval"
+order: 5000

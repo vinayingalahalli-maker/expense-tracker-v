@@ -1,0 +1,22 @@
+$kind: http-request
+description: 'Generated from cURL: curl -X POST "{{base_url}}/claims/:claimId/approve" -H "Authorization: Bearer {{approver_token}}"'
+url: "{{base_url}}/claims/:claimId/approve"
+method: POST
+headers:
+  Authorization: Bearer {{approver_token}}
+pathVariables:
+  claimId: "{{it_claim_id}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Claim approved successfully", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Claim status is approved", function () {
+          const json = pm.response.json();
+          pm.expect(json.status).to.equal("approved");
+      });
+    language: text/javascript
+settings: {}
+order: 6000

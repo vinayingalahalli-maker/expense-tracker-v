@@ -1,0 +1,8 @@
+name: Local Mock Environment
+values:
+  - key: base_url
+    value: 'http://localhost:4000'
+  - key: auth_token
+    value: ''
+  - key: current_user_id
+    value: ''

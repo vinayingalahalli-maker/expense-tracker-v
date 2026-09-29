@@ -1,0 +1,33 @@
+$kind: http-example
+name: 422 Already Claimed
+request:
+  url: "{{base_url}}/claims"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "title": "Duplicate Claim",
+        "expense_ids": ["exp-003"]
+      }
+response:
+  statusCode: 422
+  statusText: Unprocessable Entity
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "validation_error",
+        "message": "One or more expenses cannot be added to a claim.",
+        "details": [
+          {
+            "expense_id": "exp-003",
+            "issue": "Expense exp-003 is already part of claim clm-002."
+          }
+        ]
+      }
+order: 2000

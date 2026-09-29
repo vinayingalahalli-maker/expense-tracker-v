@@ -1,0 +1,29 @@
+$kind: http-example
+name: 403 Forbidden
+request:
+  url: "{{base_url}}/categories"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "name": "Software & Subscriptions",
+        "description": "SaaS tools, licenses and software subscriptions",
+        "receipt_threshold": 20.00,
+        "currency": "USD"
+      }
+response:
+  statusCode: 403
+  statusText: Forbidden
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "forbidden",
+        "message": "Only Finance users may create categories."
+      }
+order: 2000

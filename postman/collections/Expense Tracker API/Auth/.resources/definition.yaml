@@ -1,0 +1,10 @@
+$kind: collection
+name: Auth
+description: |-
+  Obtain JWT Bearer tokens for each role.
+  Use the token returned here in the `auth_token` environment variable.
+order: 1000
+auth:
+  - id: ""
+    type: noauth
+    name: No Auth

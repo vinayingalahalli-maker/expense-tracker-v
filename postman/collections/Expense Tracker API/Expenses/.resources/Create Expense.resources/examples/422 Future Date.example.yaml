@@ -1,0 +1,37 @@
+$kind: http-example
+name: 422 Future Date
+request:
+  url: "{{base_url}}/expenses"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "category_id": "cat-002",
+        "amount": 18.75,
+        "currency": "USD",
+        "date": "2099-01-01",
+        "merchant": "The Capital Grille",
+        "description": "Lunch with client"
+      }
+response:
+  statusCode: 422
+  statusText: Unprocessable Entity
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "validation_error",
+        "message": "Request body contains invalid fields.",
+        "details": [
+          {
+            "field": "date",
+            "issue": "Expense date cannot be in the future."
+          }
+        ]
+      }
+order: 2000

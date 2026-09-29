@@ -1,0 +1,48 @@
+$kind: http-example
+name: 200 OK
+request:
+  url: "{{base_url}}/expenses/exp-001"
+  method: PUT
+  headers:
+    Content-Type: application/json
+  pathVariables:
+    - key: expenseId
+      value: "{{expense_id}}"
+      description: The unique ID of the expense to update
+  body:
+    type: json
+    content: |-
+      {
+        "category_id": "cat-001",
+        "amount": 135.00,
+        "currency": "USD",
+        "date": "2024-06-10",
+        "merchant": "Delta Airlines",
+        "description": "Flight to NYC for client meeting (updated fare)",
+        "receipt_url": "https://storage.northbeam.com/receipts/exp-001-v2.pdf"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": "exp-001",
+        "employee_id": "usr-001",
+        "category_id": "cat-001",
+        "category_name": "Travel",
+        "amount": 135.00,
+        "currency": "USD",
+        "date": "2024-06-10",
+        "merchant": "Delta Airlines",
+        "description": "Flight to NYC for client meeting (updated fare)",
+        "receipt_url": "https://storage.northbeam.com/receipts/exp-001-v2.pdf",
+        "status": "unclaimed",
+        "claim_id": null,
+        "created_at": "2024-06-10T18:00:00Z",
+        "updated_at": "2024-06-15T10:00:00Z"
+      }
+order: 1000

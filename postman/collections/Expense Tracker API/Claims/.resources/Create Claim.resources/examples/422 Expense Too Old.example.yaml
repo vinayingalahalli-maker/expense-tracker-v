@@ -1,0 +1,33 @@
+$kind: http-example
+name: 422 Expense Too Old
+request:
+  url: "{{base_url}}/claims"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "title": "Old Expenses Claim",
+        "expense_ids": ["exp-010"]
+      }
+response:
+  statusCode: 422
+  statusText: Unprocessable Entity
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "validation_error",
+        "message": "One or more expenses cannot be added to a claim.",
+        "details": [
+          {
+            "expense_id": "exp-010",
+            "issue": "Expense exp-010 is older than 90 days and cannot be added to a claim."
+          }
+        ]
+      }
+order: 3000

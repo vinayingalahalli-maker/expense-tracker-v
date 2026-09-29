@@ -1,0 +1,26 @@
+$kind: http-request
+description: "Generated from cURL: curl -X POST \"{{base_url}}/claims\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{employee_token}}\" -d '{\"title\":\"Integration Test Claim\",\"expense_ids\":[\"{{it_expense_id}}\"]}'"
+url: "{{base_url}}/claims"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{employee_token}}
+body:
+  type: json
+  content: '{"title":"Integration Test Claim","expense_ids":["{{it_expense_id}}"]}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Claim created in draft state", function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test("Claim is in draft state", function () {
+          const json = pm.response.json();
+          pm.expect(json.id).to.be.a("string").and.not.empty;
+          pm.expect(json.status).to.equal("draft");
+          pm.environment.set("it_claim_id", json.id);
+      });
+    language: text/javascript
+settings: {}
+order: 3000

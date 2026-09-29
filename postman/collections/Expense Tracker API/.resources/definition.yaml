@@ -1,0 +1,34 @@
+$kind: collection
+name: Expense Tracker API
+description: |-
+  # Expense Tracker API
+
+  REST API for Northbeam Consulting's internal expense management system.
+
+  Employees record expenses, group them into claims, and submit for approval.
+  Approvers review and approve or reject claims. Finance marks approved claims as reimbursed.
+
+  ## Authentication
+  All endpoints require a **JWT Bearer token** (HS256). The token encodes the caller's role:
+  - `employee` — submit expenses and claims
+  - `approver` — approve or reject claims (cannot approve own claims)
+  - `finance` — manage categories and mark claims as reimbursed
+
+  ## Claim State Machine
+  `draft → submitted → approved | rejected → reimbursed`
+
+  ## Business Rules
+  - Amounts must be positive; dates cannot be in the future
+  - Expenses older than 90 days cannot be added to a claim
+  - A receipt is mandatory when the expense amount exceeds the category threshold
+  - Expenses inside a submitted claim are frozen (cannot be edited or deleted)
+  - An approver cannot approve their own claim
+  - A reimbursed claim is final
+variables:
+  base_url: http://localhost:8000
+auth:
+  - id: e25723ac-3321-4adc-ae71-51db47c59e04
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{auth_token}}"

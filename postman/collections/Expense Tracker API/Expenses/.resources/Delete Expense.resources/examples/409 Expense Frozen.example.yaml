@@ -1,0 +1,22 @@
+$kind: http-example
+name: 409 Expense Frozen
+request:
+  url: "{{base_url}}/expenses/exp-003"
+  method: DELETE
+  pathVariables:
+    - key: expenseId
+      value: "{{expense_id}}"
+      description: The unique ID of the expense to delete
+response:
+  statusCode: 409
+  statusText: Conflict
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "expense_frozen",
+        "message": "Expense exp-003 is part of a submitted claim and cannot be deleted."
+      }
+order: 2000

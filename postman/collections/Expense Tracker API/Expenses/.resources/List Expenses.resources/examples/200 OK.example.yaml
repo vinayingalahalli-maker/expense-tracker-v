@@ -1,0 +1,68 @@
+$kind: http-example
+name: 200 OK
+request:
+  url: "{{base_url}}/expenses"
+  method: GET
+  queryParams:
+    - key: status
+      value: unclaimed
+      disabled: true
+      description: "Filter by status: unclaimed | claimed"
+    - key: category_id
+      value: cat-001
+      disabled: true
+      description: Filter by category ID
+    - key: from_date
+      value: 2024-01-01
+      disabled: true
+      description: "Filter expenses on or after this date (ISO 8601: YYYY-MM-DD)"
+    - key: to_date
+      value: 2024-12-31
+      disabled: true
+      description: "Filter expenses on or before this date (ISO 8601: YYYY-MM-DD)"
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "expenses": [
+          {
+            "id": "exp-001",
+            "employee_id": "usr-001",
+            "category_id": "cat-001",
+            "category_name": "Travel",
+            "amount": 120.50,
+            "currency": "USD",
+            "date": "2024-06-10",
+            "merchant": "Delta Airlines",
+            "description": "Flight to NYC for client meeting",
+            "receipt_url": "https://storage.northbeam.com/receipts/exp-001.pdf",
+            "status": "unclaimed",
+            "claim_id": null,
+            "created_at": "2024-06-10T18:00:00Z",
+            "updated_at": "2024-06-10T18:00:00Z"
+          },
+          {
+            "id": "exp-002",
+            "employee_id": "usr-001",
+            "category_id": "cat-002",
+            "category_name": "Meals & Entertainment",
+            "amount": 18.75,
+            "currency": "USD",
+            "date": "2024-06-11",
+            "merchant": "The Capital Grille",
+            "description": "Lunch with client",
+            "receipt_url": null,
+            "status": "unclaimed",
+            "claim_id": null,
+            "created_at": "2024-06-11T14:30:00Z",
+            "updated_at": "2024-06-11T14:30:00Z"
+          }
+        ],
+        "total": 2
+      }
+order: 1000

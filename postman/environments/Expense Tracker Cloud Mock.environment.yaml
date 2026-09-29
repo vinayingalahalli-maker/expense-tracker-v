@@ -1,0 +1,19 @@
+name: Expense Tracker Cloud Mock
+values:
+  - key: base_url
+    value: https://9c47ecea-60f4-41bb-a764-67b667d4d827.mock.pstmn.io
+  - key: auth_token
+    value: ""
+  - key: current_user_id
+    value: ""
+  - key: employee_token
+    value: ""
+  - key: employee_id
+    value: ""
+  - key: it_expense_id
+    value: ""
+  - key: it_claim_id
+    value: ""
+  - key: approver_token
+    value: ""
+color: 240
