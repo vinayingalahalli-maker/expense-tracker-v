@@ -1,0 +1,15 @@
+$kind: http-request
+name: List Claims
+order: 1000
+method: GET
+url: "{{base_url}}/claims"
+queryParams:
+  - key: status
+    value: submitted
+    disabled: true
+    description: "Filter by status: draft | submitted | approved | rejected | reimbursed"
+  - key: employee_id
+    value: usr-001
+    disabled: true
+    description: Filter by employee (Finance and Approver only)
+examples: ./.resources/List Claims.resources/examples

@@ -1,0 +1,81 @@
+{
+  "endpoints": {
+    "/auth/login": {
+      "post": "import { ExpenseTrackerApiSdk, LoginAsFinanceRequest } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  \n  const loginAsFinanceRequest: LoginAsFinanceRequest = {\t\n    email: \"carol@northbeam.com\",\n    password: \"password123\"\n  };\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.loginAsFinance(loginAsFinanceRequest);\n\n  console.log(data);\n})();\n"
+    },
+    "/categories": {
+      "get": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.listCategories();\n\n  console.log(data);\n})();\n",
+      "post": "import { CreateCategoryRequest, ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  \n  const createCategoryRequest: CreateCategoryRequest = {\t\n    name: \"Software & Subscriptions\",\n    description: \"SaaS tools, licenses and software subscriptions\",\n    receiptThreshold: 20,\n    currency: \"USD\"\n  };\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.createCategory(createCategoryRequest);\n\n  console.log(data);\n})();\n"
+    },
+    "/categories/{categoryId}": {
+      "get": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.getCategory(\"categoryId\");\n\n  console.log(data);\n})();\n",
+      "put": "import { ExpenseTrackerApiSdk, UpdateCategoryRequest } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  \n  const updateCategoryRequest: UpdateCategoryRequest = {\t\n    name: \"Travel & Transport\",\n    description: \"Flights, trains, taxis, car hire and other transport\",\n    receiptThreshold: 75,\n    currency: \"USD\"\n  };\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.updateCategory(\n  \"categoryId\",\n  updateCategoryRequest\n);\n\n  console.log(data);\n})();\n",
+      "delete": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.deleteCategory(\"categoryId\");\n\n  console.log(data);\n})();\n"
+    },
+    "/expenses": {
+      "get": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.listExpenses({\n      status: \"unclaimed\",\n      categoryId: \"cat-001\",\n      fromDate: \"2024-01-01\",\n      toDate: \"2024-12-31\",\n  });\n\n  console.log(data);\n})();\n",
+      "post": "import { CreateExpenseRequest, ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  \n  const createExpenseRequest: CreateExpenseRequest = {\t\n    categoryId: \"{{category_id}}\",\n    amount: 120.5,\n    currency: \"USD\",\n    date: \"2024-06-10\",\n    merchant: \"Delta Airlines\",\n    description: \"Flight to NYC for client meeting\",\n    receiptUrl: \"https://storage.northbeam.com/receipts/exp-001.pdf\"\n  };\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.createExpense(createExpenseRequest);\n\n  console.log(data);\n})();\n"
+    },
+    "/expenses/{expenseId}": {
+      "get": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.getExpense(\"expenseId\");\n\n  console.log(data);\n})();\n",
+      "put": "import { ExpenseTrackerApiSdk, UpdateExpenseRequest } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  \n  const updateExpenseRequest: UpdateExpenseRequest = {\t\n    categoryId: \"cat-001\",\n    amount: 135,\n    currency: \"USD\",\n    date: \"2024-06-10\",\n    merchant: \"Delta Airlines\",\n    description: \"Flight to NYC for client meeting (updated fare)\",\n    receiptUrl: \"https://storage.northbeam.com/receipts/exp-001-v2.pdf\"\n  };\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.updateExpense(\n  \"expenseId\",\n  updateExpenseRequest\n);\n\n  console.log(data);\n})();\n",
+      "delete": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.deleteExpense(\"expenseId\");\n\n  console.log(data);\n})();\n"
+    },
+    "/claims": {
+      "get": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.listClaims({\n      status: \"submitted\",\n      employeeId: \"usr-001\",\n  });\n\n  console.log(data);\n})();\n",
+      "post": "import { CreateClaimRequest, ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  \n  const createClaimRequest: CreateClaimRequest = {\t\n    title: \"June 2024 NYC Trip\",\n    expenseIds: [\"{{expense_id}}\"]\n  };\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.createClaim(createClaimRequest);\n\n  console.log(data);\n})();\n"
+    },
+    "/claims/{claimId}": {
+      "get": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.getClaim(\"claimId\");\n\n  console.log(data);\n})();\n"
+    },
+    "/claims/{claimId}/submit": {
+      "post": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.submitClaim(\"claimId\");\n\n  console.log(data);\n})();\n"
+    },
+    "/claims/{claimId}/approve": {
+      "post": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.approveClaim(\"claimId\");\n\n  console.log(data);\n})();\n"
+    }
+  },
+  "methodResponses": {
+    "/auth/login": {
+      "post": "{  }"
+    },
+    "/categories": {
+      "get": "{  }",
+      "post": "{  }"
+    },
+    "/categories/{categoryId}": {
+      "get": "{  }",
+      "put": "{  }",
+      "delete": "{  }"
+    },
+    "/expenses": {
+      "get": "{  }",
+      "post": "{  }"
+    },
+    "/expenses/{expenseId}": {
+      "get": "{  }",
+      "put": "{  }",
+      "delete": "{  }"
+    },
+    "/claims": {
+      "get": "{  }",
+      "post": "{  }"
+    },
+    "/claims/{claimId}": {
+      "get": "{  }"
+    },
+    "/claims/{claimId}/submit": {
+      "post": "{  }"
+    },
+    "/claims/{claimId}/approve": {
+      "post": "{  }"
+    }
+  },
+  "example": "import { ExpenseTrackerApiSdk } from 'expense-tracker-api-sdk';\n\n(async () => {\n  const expenseTrackerApiSdk = new ExpenseTrackerApiSdk({\n\ttoken: 'YOUR_TOKEN',\n});\n\n  const data = await expenseTrackerApiSdk.expenseTrackerApiSdk.listCategories();\n\n  console.log(data);\n})();\n",
+  "authentication": {
+    "bearer": {
+      "constructor": "const sdk = new ExpenseTrackerApiSdk({ token: 'YOUR_TOKEN' });",
+      "setter": "const sdk = new ExpenseTrackerApiSdk();\nsdk.token = 'YOUR_TOKEN';"
+    }
+  }
+}

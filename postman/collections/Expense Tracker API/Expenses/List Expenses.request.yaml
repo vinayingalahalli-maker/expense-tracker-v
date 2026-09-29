@@ -1,0 +1,23 @@
+$kind: http-request
+name: List Expenses
+order: 1000
+method: GET
+url: "{{base_url}}/expenses"
+queryParams:
+  - key: status
+    value: unclaimed
+    disabled: true
+    description: "Filter by status: unclaimed | claimed"
+  - key: category_id
+    value: cat-001
+    disabled: true
+    description: Filter by category ID
+  - key: from_date
+    value: 2024-01-01
+    disabled: true
+    description: "Filter expenses on or after this date (ISO 8601: YYYY-MM-DD)"
+  - key: to_date
+    value: 2024-12-31
+    disabled: true
+    description: "Filter expenses on or before this date (ISO 8601: YYYY-MM-DD)"
+examples: ./.resources/List Expenses.resources/examples

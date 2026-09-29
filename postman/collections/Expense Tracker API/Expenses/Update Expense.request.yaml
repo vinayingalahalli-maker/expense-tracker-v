@@ -1,0 +1,24 @@
+$kind: http-request
+name: Update Expense
+order: 4000
+method: PUT
+url: "{{base_url}}/expenses/:expenseId"
+pathVariables:
+  - key: expenseId
+    value: "{{expense_id}}"
+    description: The unique ID of the expense to update
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "category_id": "cat-001",
+      "amount": 135.00,
+      "currency": "USD",
+      "date": "2024-06-10",
+      "merchant": "Delta Airlines",
+      "description": "Flight to NYC for client meeting (updated fare)",
+      "receipt_url": "https://storage.northbeam.com/receipts/exp-001-v2.pdf"
+    }
+examples: ./.resources/Update Expense.resources/examples

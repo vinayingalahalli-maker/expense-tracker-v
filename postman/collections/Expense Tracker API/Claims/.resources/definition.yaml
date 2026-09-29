@@ -1,0 +1,19 @@
+$kind: collection
+name: Claims
+description: |-
+  Employees group unclaimed expenses into a claim and submit it for approval.
+
+  **Claim state machine:** `draft → submitted → approved | rejected → reimbursed`
+
+  **Business rules:**
+  - Only unclaimed expenses can be added to a claim
+  - Expenses older than 90 days cannot be added to a claim
+  - A claim must contain at least one expense before it can be submitted
+  - An approver cannot approve their own claim
+  - A reimbursed claim is final — no further state changes are permitted
+
+  **Role access:**
+  - `employee` — create claims, add/remove expenses, submit claims
+  - `approver` — approve or reject submitted claims (not their own)
+  - `finance` — mark approved claims as reimbursed
+order: 4000

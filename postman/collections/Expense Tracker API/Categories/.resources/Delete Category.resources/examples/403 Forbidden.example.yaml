@@ -1,0 +1,22 @@
+$kind: http-example
+name: 403 Forbidden
+request:
+  url: "{{base_url}}/categories/cat-001"
+  method: DELETE
+  pathVariables:
+    - key: categoryId
+      value: "{{category_id}}"
+      description: The unique ID of the category to delete
+response:
+  statusCode: 403
+  statusText: Forbidden
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "forbidden",
+        "message": "Only Finance users may delete categories."
+      }
+order: 2000

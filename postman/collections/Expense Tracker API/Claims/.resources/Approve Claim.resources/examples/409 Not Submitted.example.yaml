@@ -1,0 +1,23 @@
+$kind: http-example
+name: 409 Not Submitted
+request:
+  url: "{{base_url}}/claims/clm-004/approve"
+  method: POST
+  pathVariables:
+    - key: claimId
+      value: "{{claim_id}}"
+      description: The unique ID of the submitted claim to approve
+response:
+  statusCode: 409
+  statusText: Conflict
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "invalid_state_transition",
+        "message": "Only submitted claims can be approved. Claim clm-004 is in draft status.",
+        "current_status": "draft"
+      }
+order: 3000

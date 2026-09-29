@@ -1,0 +1,1329 @@
+openapi: 3.0.0
+info:
+  title: Expense Tracker API
+  version: 1.0.0
+  description: >-
+    # Expense Tracker API
+
+
+    REST API for Northbeam Consulting's internal expense management system.
+
+
+    Employees record expenses, group them into claims, and submit for approval.
+
+    Approvers review and approve or reject claims. Finance marks approved claims
+    as reimbursed.
+
+
+    ## Authentication
+
+    All endpoints require a **JWT Bearer token** (HS256). The token encodes the
+    caller's role:
+
+    - `employee` — submit expenses and claims
+
+    - `approver` — approve or reject claims (cannot approve own claims)
+
+    - `finance` — manage categories and mark claims as reimbursed
+
+
+    ## Claim State Machine
+
+    `draft → submitted → approved | rejected → reimbursed`
+
+
+    ## Business Rules
+
+    - Amounts must be positive; dates cannot be in the future
+
+    - Expenses older than 90 days cannot be added to a claim
+
+    - A receipt is mandatory when the expense amount exceeds the category
+    threshold
+
+    - Expenses inside a submitted claim are frozen (cannot be edited or deleted)
+
+    - An approver cannot approve their own claim
+
+    - A reimbursed claim is final
+servers:
+  - url: http://localhost:8000
+paths:
+  /auth/login:
+    post:
+      summary: Login as Employee
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                        format: email
+                      name:
+                        type: string
+                      role:
+                        type: string
+              example:
+                token: >-
+                  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3ItMDAxIiwiZW1haWwiOiJhbGljZUBub3J0aGJlYW0uY29tIiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDM2MDB9.signature
+                user:
+                  id: usr-001
+                  email: alice@northbeam.com
+                  name: Alice Chen
+                  role: employee
+        '401':
+          description: 401 Invalid Credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: invalid_credentials
+                message: Email or password is incorrect.
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+            example:
+              email: alice@northbeam.com
+              password: password123
+  /categories:
+    get:
+      summary: List Categories
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        receipt_threshold:
+                          type: integer
+                        currency:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  total:
+                    type: integer
+              example:
+                categories:
+                  - id: cat-001
+                    name: Travel
+                    description: Flights, trains, taxis and other transport
+                    receipt_threshold: 50
+                    currency: USD
+                    created_at: '2024-01-01T00:00:00Z'
+                    updated_at: '2024-01-01T00:00:00Z'
+                  - id: cat-002
+                    name: Meals & Entertainment
+                    description: Business meals and client entertainment
+                    receipt_threshold: 25
+                    currency: USD
+                    created_at: '2024-01-01T00:00:00Z'
+                    updated_at: '2024-01-01T00:00:00Z'
+                  - id: cat-003
+                    name: Accommodation
+                    description: Hotels and other lodging
+                    receipt_threshold: 100
+                    currency: USD
+                    created_at: '2024-01-01T00:00:00Z'
+                    updated_at: '2024-01-01T00:00:00Z'
+                  - id: cat-004
+                    name: Office Supplies
+                    description: Stationery, equipment and other office items
+                    receipt_threshold: 30
+                    currency: USD
+                    created_at: '2024-01-01T00:00:00Z'
+                    updated_at: '2024-01-01T00:00:00Z'
+                total: 4
+        '401':
+          description: 401 Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: unauthorized
+                message: A valid Bearer token is required.
+      tags:
+        - Categories
+    post:
+      summary: Create Category
+      responses:
+        '201':
+          description: 201 Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  receipt_threshold:
+                    type: integer
+                  currency:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: cat-005
+                name: Software & Subscriptions
+                description: SaaS tools, licenses and software subscriptions
+                receipt_threshold: 20
+                currency: USD
+                created_at: '2024-06-01T10:00:00Z'
+                updated_at: '2024-06-01T10:00:00Z'
+        '403':
+          description: 403 Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: forbidden
+                message: Only Finance users may create categories.
+        '422':
+          description: 422 Validation Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        issue:
+                          type: string
+              example:
+                error: validation_error
+                message: Request body contains invalid fields.
+                details:
+                  - field: name
+                    issue: name is required and cannot be empty.
+                  - field: receipt_threshold
+                    issue: receipt_threshold must be a positive number.
+      tags:
+        - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                receipt_threshold:
+                  type: integer
+                currency:
+                  type: string
+            example:
+              name: Software & Subscriptions
+              description: SaaS tools, licenses and software subscriptions
+              receipt_threshold: 20
+              currency: USD
+  /categories/{categoryId}:
+    get:
+      summary: Get Category
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  receipt_threshold:
+                    type: integer
+                  currency:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: cat-001
+                name: Travel
+                description: Flights, trains, taxis and other transport
+                receipt_threshold: 50
+                currency: USD
+                created_at: '2024-01-01T00:00:00Z'
+                updated_at: '2024-01-01T00:00:00Z'
+        '404':
+          description: 404 Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: not_found
+                message: Category cat-999 does not exist.
+      tags:
+        - Categories
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        description: The unique ID of the category to delete
+        schema:
+          type: string
+        example: '{{category_id}}'
+    put:
+      summary: Update Category
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  receipt_threshold:
+                    type: integer
+                  currency:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: cat-001
+                name: Travel & Transport
+                description: Flights, trains, taxis, car hire and other transport
+                receipt_threshold: 75
+                currency: USD
+                created_at: '2024-01-01T00:00:00Z'
+                updated_at: '2024-06-15T09:30:00Z'
+      tags:
+        - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                receipt_threshold:
+                  type: integer
+                currency:
+                  type: string
+            example:
+              name: Travel & Transport
+              description: Flights, trains, taxis, car hire and other transport
+              receipt_threshold: 75
+              currency: USD
+    delete:
+      summary: Delete Category
+      responses:
+        '204':
+          description: 204 No Content
+        '403':
+          description: 403 Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: forbidden
+                message: Only Finance users may delete categories.
+      tags:
+        - Categories
+  /expenses:
+    get:
+      summary: List Expenses
+      parameters:
+        - name: status
+          in: query
+          description: 'Filter by status: unclaimed | claimed'
+          schema:
+            type: string
+          example: unclaimed
+        - name: category_id
+          in: query
+          description: Filter by category ID
+          schema:
+            type: string
+          example: cat-001
+        - name: from_date
+          in: query
+          description: 'Filter expenses on or after this date (ISO 8601: YYYY-MM-DD)'
+          schema:
+            type: string
+          example: '2024-01-01'
+        - name: to_date
+          in: query
+          description: 'Filter expenses on or before this date (ISO 8601: YYYY-MM-DD)'
+          schema:
+            type: string
+          example: '2024-12-31'
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expenses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        employee_id:
+                          type: string
+                        category_id:
+                          type: string
+                        category_name:
+                          type: string
+                        amount:
+                          type: number
+                        currency:
+                          type: string
+                        date:
+                          type: string
+                          format: date
+                        merchant:
+                          type: string
+                        description:
+                          type: string
+                        receipt_url:
+                          type: string
+                          format: uri
+                        status:
+                          type: string
+                        claim_id:
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  total:
+                    type: integer
+              example:
+                expenses:
+                  - id: exp-001
+                    employee_id: usr-001
+                    category_id: cat-001
+                    category_name: Travel
+                    amount: 120.5
+                    currency: USD
+                    date: '2024-06-10'
+                    merchant: Delta Airlines
+                    description: Flight to NYC for client meeting
+                    receipt_url: https://storage.northbeam.com/receipts/exp-001.pdf
+                    status: unclaimed
+                    claim_id: null
+                    created_at: '2024-06-10T18:00:00Z'
+                    updated_at: '2024-06-10T18:00:00Z'
+                  - id: exp-002
+                    employee_id: usr-001
+                    category_id: cat-002
+                    category_name: Meals & Entertainment
+                    amount: 18.75
+                    currency: USD
+                    date: '2024-06-11'
+                    merchant: The Capital Grille
+                    description: Lunch with client
+                    receipt_url: null
+                    status: unclaimed
+                    claim_id: null
+                    created_at: '2024-06-11T14:30:00Z'
+                    updated_at: '2024-06-11T14:30:00Z'
+                total: 2
+      tags:
+        - Expenses
+    post:
+      summary: Create Expense
+      responses:
+        '201':
+          description: 201 Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  category_id:
+                    type: string
+                  category_name:
+                    type: string
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  merchant:
+                    type: string
+                  description:
+                    type: string
+                  receipt_url:
+                    type: string
+                    format: uri
+                  status:
+                    type: string
+                  claim_id:
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: exp-001
+                employee_id: usr-001
+                category_id: cat-001
+                category_name: Travel
+                amount: 120.5
+                currency: USD
+                date: '2024-06-10'
+                merchant: Delta Airlines
+                description: Flight to NYC for client meeting
+                receipt_url: https://storage.northbeam.com/receipts/exp-001.pdf
+                status: unclaimed
+                claim_id: null
+                created_at: '2024-06-10T18:00:00Z'
+                updated_at: '2024-06-10T18:00:00Z'
+        '422':
+          description: 422 Future Date
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        issue:
+                          type: string
+              examples:
+                422 Future Date:
+                  value:
+                    error: validation_error
+                    message: Request body contains invalid fields.
+                    details:
+                      - field: date
+                        issue: Expense date cannot be in the future.
+                422 Receipt Required:
+                  value:
+                    error: validation_error
+                    message: Request body contains invalid fields.
+                    details:
+                      - field: receipt_url
+                        issue: >-
+                          A receipt is required for Travel expenses above
+                          $50.00.
+      tags:
+        - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_id:
+                  type: string
+                amount:
+                  type: number
+                currency:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                merchant:
+                  type: string
+                description:
+                  type: string
+                receipt_url:
+                  type: string
+                  format: uri
+            example:
+              category_id: '{{category_id}}'
+              amount: 120.5
+              currency: USD
+              date: '2024-06-10'
+              merchant: Delta Airlines
+              description: Flight to NYC for client meeting
+              receipt_url: https://storage.northbeam.com/receipts/exp-001.pdf
+  /expenses/{expenseId}:
+    get:
+      summary: Get Expense
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  category_id:
+                    type: string
+                  category_name:
+                    type: string
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  merchant:
+                    type: string
+                  description:
+                    type: string
+                  receipt_url:
+                    type: string
+                    format: uri
+                  status:
+                    type: string
+                  claim_id:
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: exp-001
+                employee_id: usr-001
+                category_id: cat-001
+                category_name: Travel
+                amount: 120.5
+                currency: USD
+                date: '2024-06-10'
+                merchant: Delta Airlines
+                description: Flight to NYC for client meeting
+                receipt_url: https://storage.northbeam.com/receipts/exp-001.pdf
+                status: unclaimed
+                claim_id: null
+                created_at: '2024-06-10T18:00:00Z'
+                updated_at: '2024-06-10T18:00:00Z'
+        '404':
+          description: 404 Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: not_found
+                message: Expense exp-999 does not exist.
+      tags:
+        - Expenses
+    parameters:
+      - name: expenseId
+        in: path
+        required: true
+        description: The unique ID of the expense to delete
+        schema:
+          type: string
+        example: '{{expense_id}}'
+    put:
+      summary: Update Expense
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  category_id:
+                    type: string
+                  category_name:
+                    type: string
+                  amount:
+                    type: integer
+                  currency:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  merchant:
+                    type: string
+                  description:
+                    type: string
+                  receipt_url:
+                    type: string
+                    format: uri
+                  status:
+                    type: string
+                  claim_id:
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: exp-001
+                employee_id: usr-001
+                category_id: cat-001
+                category_name: Travel
+                amount: 135
+                currency: USD
+                date: '2024-06-10'
+                merchant: Delta Airlines
+                description: Flight to NYC for client meeting (updated fare)
+                receipt_url: https://storage.northbeam.com/receipts/exp-001-v2.pdf
+                status: unclaimed
+                claim_id: null
+                created_at: '2024-06-10T18:00:00Z'
+                updated_at: '2024-06-15T10:00:00Z'
+        '409':
+          description: 409 Expense Frozen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: expense_frozen
+                message: >-
+                  Expense exp-003 is part of a submitted claim and cannot be
+                  modified.
+      tags:
+        - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_id:
+                  type: string
+                amount:
+                  type: integer
+                currency:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                merchant:
+                  type: string
+                description:
+                  type: string
+                receipt_url:
+                  type: string
+                  format: uri
+            example:
+              category_id: cat-001
+              amount: 135
+              currency: USD
+              date: '2024-06-10'
+              merchant: Delta Airlines
+              description: Flight to NYC for client meeting (updated fare)
+              receipt_url: https://storage.northbeam.com/receipts/exp-001-v2.pdf
+    delete:
+      summary: Delete Expense
+      responses:
+        '204':
+          description: 204 No Content
+        '409':
+          description: 409 Expense Frozen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: expense_frozen
+                message: >-
+                  Expense exp-003 is part of a submitted claim and cannot be
+                  deleted.
+      tags:
+        - Expenses
+  /claims:
+    get:
+      summary: List Claims
+      parameters:
+        - name: status
+          in: query
+          description: >-
+            Filter by status: draft | submitted | approved | rejected |
+            reimbursed
+          schema:
+            type: string
+          example: submitted
+        - name: employee_id
+          in: query
+          description: Filter by employee (Finance and Approver only)
+          schema:
+            type: string
+          example: usr-001
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  claims:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        employee_id:
+                          type: string
+                        employee_name:
+                          type: string
+                        title:
+                          type: string
+                        status:
+                          type: string
+                        total_amount:
+                          type: number
+                        currency:
+                          type: string
+                        expense_count:
+                          type: integer
+                        submitted_at:
+                          type: string
+                          format: date-time
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                  total:
+                    type: integer
+              example:
+                claims:
+                  - id: clm-001
+                    employee_id: usr-001
+                    employee_name: Alice Chen
+                    title: June 2024 NYC Trip
+                    status: submitted
+                    total_amount: 139.25
+                    currency: USD
+                    expense_count: 2
+                    submitted_at: '2024-06-12T09:00:00Z'
+                    created_at: '2024-06-11T20:00:00Z'
+                    updated_at: '2024-06-12T09:00:00Z'
+                  - id: clm-002
+                    employee_id: usr-001
+                    employee_name: Alice Chen
+                    title: May 2024 Expenses
+                    status: reimbursed
+                    total_amount: 245
+                    currency: USD
+                    expense_count: 3
+                    submitted_at: '2024-05-31T17:00:00Z'
+                    created_at: '2024-05-30T10:00:00Z'
+                    updated_at: '2024-06-05T11:00:00Z'
+                total: 2
+      tags:
+        - Claims
+    post:
+      summary: Create Claim
+      responses:
+        '201':
+          description: 201 Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  employee_name:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  currency:
+                    type: string
+                  expense_count:
+                    type: integer
+                  submitted_at:
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: clm-001
+                employee_id: usr-001
+                employee_name: Alice Chen
+                title: June 2024 NYC Trip
+                status: draft
+                total_amount: 139.25
+                currency: USD
+                expense_count: 2
+                submitted_at: null
+                created_at: '2024-06-11T20:00:00Z'
+                updated_at: '2024-06-11T20:00:00Z'
+        '422':
+          description: 422 Already Claimed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        expense_id:
+                          type: string
+                        issue:
+                          type: string
+              examples:
+                422 Already Claimed:
+                  value:
+                    error: validation_error
+                    message: One or more expenses cannot be added to a claim.
+                    details:
+                      - expense_id: exp-003
+                        issue: Expense exp-003 is already part of claim clm-002.
+                422 Expense Too Old:
+                  value:
+                    error: validation_error
+                    message: One or more expenses cannot be added to a claim.
+                    details:
+                      - expense_id: exp-010
+                        issue: >-
+                          Expense exp-010 is older than 90 days and cannot be
+                          added to a claim.
+      tags:
+        - Claims
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                expense_ids:
+                  type: array
+                  items:
+                    type: string
+            example:
+              title: June 2024 NYC Trip
+              expense_ids:
+                - '{{expense_id}}'
+  /claims/{claimId}:
+    get:
+      summary: Get Claim
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  employee_name:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  currency:
+                    type: string
+                  submitted_at:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  expenses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        amount:
+                          type: number
+                        currency:
+                          type: string
+                        date:
+                          type: string
+                          format: date
+                        merchant:
+                          type: string
+                        description:
+                          type: string
+              example:
+                id: clm-001
+                employee_id: usr-001
+                employee_name: Alice Chen
+                title: June 2024 NYC Trip
+                status: submitted
+                total_amount: 139.25
+                currency: USD
+                submitted_at: '2024-06-12T09:00:00Z'
+                created_at: '2024-06-11T20:00:00Z'
+                updated_at: '2024-06-12T09:00:00Z'
+                expenses:
+                  - id: exp-001
+                    category_name: Travel
+                    amount: 120.5
+                    currency: USD
+                    date: '2024-06-10'
+                    merchant: Delta Airlines
+                    description: Flight to NYC for client meeting
+                  - id: exp-002
+                    category_name: Meals & Entertainment
+                    amount: 18.75
+                    currency: USD
+                    date: '2024-06-11'
+                    merchant: The Capital Grille
+                    description: Lunch with client
+      tags:
+        - Claims
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        description: The unique ID of the claim
+        schema:
+          type: string
+        example: '{{claim_id}}'
+  /claims/{claimId}/submit:
+    post:
+      summary: Submit Claim
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  employee_name:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  currency:
+                    type: string
+                  expense_count:
+                    type: integer
+                  submitted_at:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: clm-001
+                employee_id: usr-001
+                employee_name: Alice Chen
+                title: June 2024 NYC Trip
+                status: submitted
+                total_amount: 139.25
+                currency: USD
+                expense_count: 2
+                submitted_at: '2024-06-12T09:00:00Z'
+                created_at: '2024-06-11T20:00:00Z'
+                updated_at: '2024-06-12T09:00:00Z'
+        '409':
+          description: 409 Invalid State Transition
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  current_status:
+                    type: string
+              example:
+                error: invalid_state_transition
+                message: >-
+                  Claim clm-001 is already submitted and cannot be submitted
+                  again.
+                current_status: submitted
+      tags:
+        - Claims
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        description: The unique ID of the draft claim to submit
+        schema:
+          type: string
+        example: '{{claim_id}}'
+  /claims/{claimId}/approve:
+    post:
+      summary: Approve Claim
+      responses:
+        '200':
+          description: 200 OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  employee_id:
+                    type: string
+                  employee_name:
+                    type: string
+                  title:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  currency:
+                    type: string
+                  expense_count:
+                    type: integer
+                  approved_by:
+                    type: string
+                  approved_at:
+                    type: string
+                    format: date-time
+                  submitted_at:
+                    type: string
+                    format: date-time
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+              example:
+                id: clm-001
+                employee_id: usr-001
+                employee_name: Alice Chen
+                title: June 2024 NYC Trip
+                status: approved
+                total_amount: 139.25
+                currency: USD
+                expense_count: 2
+                approved_by: usr-002
+                approved_at: '2024-06-13T10:30:00Z'
+                submitted_at: '2024-06-12T09:00:00Z'
+                created_at: '2024-06-11T20:00:00Z'
+                updated_at: '2024-06-13T10:30:00Z'
+        '403':
+          description: 403 Cannot Approve Own Claim
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+              example:
+                error: forbidden
+                message: An approver cannot approve their own claim.
+        '409':
+          description: 409 Not Submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  current_status:
+                    type: string
+              example:
+                error: invalid_state_transition
+                message: >-
+                  Only submitted claims can be approved. Claim clm-004 is in
+                  draft status.
+                current_status: draft
+      tags:
+        - Claims
+    parameters:
+      - name: claimId
+        in: path
+        required: true
+        description: The unique ID of the submitted claim to approve
+        schema:
+          type: string
+        example: '{{claim_id}}'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []

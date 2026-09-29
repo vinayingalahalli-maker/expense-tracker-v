@@ -1,0 +1,22 @@
+$kind: http-example
+name: 404 Not Found
+request:
+  url: "{{base_url}}/expenses/exp-999"
+  method: GET
+  pathVariables:
+    - key: expenseId
+      value: "{{expense_id}}"
+      description: The unique ID of the expense
+response:
+  statusCode: 404
+  statusText: Not Found
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "not_found",
+        "message": "Expense exp-999 does not exist."
+      }
+order: 2000

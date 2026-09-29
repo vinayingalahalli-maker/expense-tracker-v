@@ -1,0 +1,26 @@
+$kind: http-request
+name: Create Category
+order: 3000
+method: POST
+url: "{{base_url}}/categories"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Software & Subscriptions",
+      "description": "SaaS tools, licenses and software subscriptions",
+      "receipt_threshold": 20.00,
+      "currency": "USD"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const json = pm.response.json();
+      if (pm.response.code === 201 && json.id) {
+          pm.environment.set("category_id", json.id);
+          console.log("Category ID saved:", json.id);
+      }
+    language: text/javascript
+examples: ./.resources/Create Category.resources/examples

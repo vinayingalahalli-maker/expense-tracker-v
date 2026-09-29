@@ -1,0 +1,24 @@
+$kind: http-request
+name: Create Claim
+order: 3000
+method: POST
+url: "{{base_url}}/claims"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "June 2024 NYC Trip",
+      "expense_ids": ["{{expense_id}}"]
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const json = pm.response.json();
+      if (pm.response.code === 201 && json.id) {
+          pm.environment.set("claim_id", json.id);
+          console.log("Claim ID saved:", json.id);
+      }
+    language: text/javascript
+examples: ./.resources/Create Claim.resources/examples

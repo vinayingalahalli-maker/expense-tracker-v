@@ -1,0 +1,25 @@
+$kind: http-request
+name: Login as Finance
+order: 3000
+method: POST
+url: "{{base_url}}/auth/login"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "carol@northbeam.com",
+      "password": "password123"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const json = pm.response.json();
+      if (json.token) {
+          pm.environment.set("auth_token", json.token);
+          pm.environment.set("current_user_id", json.user.id);
+          console.log("Token saved for Finance:", json.user.email);
+      }
+    language: text/javascript
+examples: ./.resources/Login as Finance.resources/examples

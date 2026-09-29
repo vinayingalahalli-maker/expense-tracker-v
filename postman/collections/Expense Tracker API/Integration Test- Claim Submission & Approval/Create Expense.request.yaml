@@ -1,0 +1,25 @@
+$kind: http-request
+description: "Generated from cURL: curl -X POST \"{{base_url}}/expenses\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer {{employee_token}}\" -d '{\"category_id\":\"{{category_id}}\",\"amount\":120.50,\"currency\":\"USD\",\"date\":\"2024-06-10\",\"merchant\":\"Delta Airlines\",\"description\":\"Flight to NYC for client meeting\",\"receipt_url\":\"https://storage.northbeam.com/receipts/exp-001.pdf\"}'"
+url: "{{base_url}}/expenses"
+method: POST
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{employee_token}}
+body:
+  type: json
+  content: '{"category_id":"{{category_id}}","amount":120.50,"currency":"USD","date":"2024-06-10","merchant":"Delta Airlines","description":"Flight to NYC for client meeting","receipt_url":"https://storage.northbeam.com/receipts/exp-001.pdf"}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Expense created", function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test("Response has expense id", function () {
+          const json = pm.response.json();
+          pm.expect(json.id).to.be.a("string").and.not.empty;
+          pm.environment.set("it_expense_id", json.id);
+      });
+    language: text/javascript
+settings: {}
+order: 2000

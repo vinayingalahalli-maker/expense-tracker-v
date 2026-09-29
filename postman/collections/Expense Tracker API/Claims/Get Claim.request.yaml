@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get Claim
+order: 2000
+method: GET
+url: "{{base_url}}/claims/:claimId"
+pathVariables:
+  - key: claimId
+    value: "{{claim_id}}"
+    description: The unique ID of the claim
+examples: ./.resources/Get Claim.resources/examples

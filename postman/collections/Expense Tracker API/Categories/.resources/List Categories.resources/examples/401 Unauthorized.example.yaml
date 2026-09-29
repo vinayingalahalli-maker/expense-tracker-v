@@ -1,0 +1,18 @@
+$kind: http-example
+name: 401 Unauthorized
+request:
+  url: "{{base_url}}/categories"
+  method: GET
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "unauthorized",
+        "message": "A valid Bearer token is required."
+      }
+order: 2000

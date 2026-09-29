@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "expense_tracker_api_sdk"
+version = "1.0.0"
+description = """# Expense Tracker API\n\nREST API for Northbeam Consulting's internal expense management system.\n\nEmployees record expenses, group them into claims, and submit for approval.\nApprovers review and approve or reject claims. Finance marks approved claims as reimbursed.\n\n## Authentication\nAll endpoints require a **JWT Bearer token** (HS256). The token encodes the caller's role:\n- `employee` — submit expenses and claims\n- `approver` — approve or reject claims (cannot approve own claims)\n- `finance` — manage categories and mark claims as reimbursed\n\n## Claim State Machine\n`draft → submitted → approved | rejected → reimbursed`\n\n## Business Rules\n- Amounts must be positive; dates cannot be in the future\n- Expenses older than 90 days cannot be added to a claim\n- A receipt is mandatory when the expense amount exceeds the category threshold\n- Expenses inside a submitted claim are frozen (cannot be edited or deleted)\n- An approver cannot approve their own claim\n- A reimbursed claim is final"""
+readme = "PyPI_README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31.0",
+    "pydantic>=2.0.0,<3.0.0"
+]

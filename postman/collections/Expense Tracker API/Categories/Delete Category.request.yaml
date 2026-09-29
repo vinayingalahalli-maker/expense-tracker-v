@@ -1,0 +1,10 @@
+$kind: http-request
+name: Delete Category
+order: 5000
+method: DELETE
+url: "{{base_url}}/categories/:categoryId"
+pathVariables:
+  - key: categoryId
+    value: "{{category_id}}"
+    description: The unique ID of the category to delete
+examples: ./.resources/Delete Category.resources/examples

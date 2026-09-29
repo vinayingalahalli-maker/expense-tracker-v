@@ -1,0 +1,23 @@
+id: 01a0ed76-b2f5-77cf-ba30-267a9d23b4ff
+version: 1
+name: expense-tracker-api
+slug: new-mock-18dbc
+enableSession: true
+protocol: http
+port: 4000
+autoRestartOnChange: true
+logging:
+  level: verbose
+  showBody: true
+associations:
+  - entityType: collection
+    entityId: d20B1Cd9E7cb3d95d35E861A
+    relation: source
+    syncEnabled: true
+    meta: null
+    updatedAt: 2026-09-29T14:01:20.000Z
+scenarios:
+  - name: default
+    id: 01a0ed78-53c3-7198-bf45-c6420353fb2f
+    path: ./default.js
+    default: true

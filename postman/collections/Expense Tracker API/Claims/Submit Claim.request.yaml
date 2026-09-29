@@ -1,0 +1,10 @@
+$kind: http-request
+name: Submit Claim
+order: 4000
+method: POST
+url: "{{base_url}}/claims/:claimId/submit"
+pathVariables:
+  - key: claimId
+    value: "{{claim_id}}"
+    description: The unique ID of the draft claim to submit
+examples: ./.resources/Submit Claim.resources/examples

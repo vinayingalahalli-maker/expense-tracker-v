@@ -1,0 +1,29 @@
+$kind: http-request
+name: Create Expense
+order: 3000
+method: POST
+url: "{{base_url}}/expenses"
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "category_id": "{{category_id}}",
+      "amount": 120.50,
+      "currency": "USD",
+      "date": "2024-06-10",
+      "merchant": "Delta Airlines",
+      "description": "Flight to NYC for client meeting",
+      "receipt_url": "https://storage.northbeam.com/receipts/exp-001.pdf"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const json = pm.response.json();
+      if (pm.response.code === 201 && json.id) {
+          pm.environment.set("expense_id", json.id);
+          console.log("Expense ID saved:", json.id);
+      }
+    language: text/javascript
+examples: ./.resources/Create Expense.resources/examples

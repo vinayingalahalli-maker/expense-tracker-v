@@ -1,0 +1,32 @@
+$kind: http-example
+name: 200 OK
+request:
+  url: "{{base_url}}/auth/login"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "email": "bob@northbeam.com",
+        "password": "password123"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3ItMDAyIiwiZW1haWwiOiJib2JAbm9ydGhiZWFtLmNvbSIsInJvbGUiOiJhcHByb3ZlciIsImlhdCI6MTcwMDAwMDAwMCwiZXhwIjoxNzAwMDAzNjAwfQ.signature",
+        "user": {
+          "id": "usr-002",
+          "email": "bob@northbeam.com",
+          "name": "Bob Martinez",
+          "role": "approver"
+        }
+      }
+order: 1000
